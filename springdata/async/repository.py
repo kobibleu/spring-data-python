@@ -61,23 +61,23 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def delete_by_id(self, id: ID) -> None:
+    async def delete_by_id(self, id_: ID) -> None:
         """
         Deletes the entity with the given id.
 
         If the entity is not found in the persistence store it is silently ignored.
 
-        :param id: must not be None.
+        :param id_: must not be None.
         :raises ValueError: if id is None.
         """
         raise NotImplementedError()
 
     @abstractmethod
-    async def exists_by_id(self, id: ID) -> bool:
+    async def exists_by_id(self, id_: ID) -> bool:
         """
         Returns whether an entity with the given id exists.
 
-        :param id: must not be None.
+        :param id_: must not be None.
         :return: true if an entity with the given id exists, false otherwise.
         :raises ValueError: if id is None.
         """
@@ -108,11 +108,11 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def find_by_id(self, id: ID) -> Optional[T]:
+    async def find_by_id(self, id_: ID) -> Optional[T]:
         """
         Retrieves an entity by its id.
 
-        :param id: must not be None.
+        :param id_: must not be None.
         :return: the entity with the given id or None if none found.
         :raises ValueError: if id is None.
         """

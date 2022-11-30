@@ -73,11 +73,11 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    def exists_by_id(self, id: ID) -> bool:
+    def exists_by_id(self, id_: ID) -> bool:
         """
         Returns whether an entity with the given id exists.
 
-        :param id: must not be None.
+        :param id_: must not be None.
         :return: true if an entity with the given id exists, false otherwise.
         :raises ValueError: if id is None.
         """
@@ -108,11 +108,11 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    def find_by_id(self, id: ID) -> Optional[T]:
+    def find_by_id(self, id_: ID) -> Optional[T]:
         """
         Retrieves an entity by its id.
 
-        :param id: must not be None.
+        :param id_: must not be None.
         :return: the entity with the given id or None if none found.
         :raises ValueError: if id is None.
         """
