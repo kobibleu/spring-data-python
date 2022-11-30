@@ -1,6 +1,5 @@
-import typing
 from abc import ABC, abstractmethod
-from typing import List, Optional, TypeVar, Generic
+from typing import TypeVar, Generic, List, Optional
 
 from springdata.domain import Page, Sort, Pageable
 
@@ -40,7 +39,7 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def delete_all(self, entities: typing.List[T]) -> None:
+    async def delete_all(self, entities: List[T]) -> None:
         """
         Deletes the given entities.
 
@@ -50,7 +49,7 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def delete_all_by_id(self, ids: typing.List[ID]) -> None:
+    async def delete_all_by_id(self, ids: List[ID]) -> None:
         """
         Deletes all entities with the given IDs.
 
@@ -95,7 +94,7 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def find_all_by_id(self, ids: typing.List[ID], sort: Sort = None) -> List[T]:
+    async def find_all_by_id(self, ids: List[ID], sort: Sort = None) -> List[T]:
         """
         Returns all entities with the given IDs.
 
@@ -134,7 +133,7 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
     @abstractmethod
-    async def save_all(self, entities: typing.List[T]) -> typing.List[T]:
+    async def save_all(self, entities: List[T]) -> List[T]:
         """
         Saves all given entities.
 
