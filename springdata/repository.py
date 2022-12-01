@@ -145,7 +145,7 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
 
-class PagingRepository(ABC, Generic[T, ID], CrudRepository[T, ID]):
+class PagingRepository(Generic[T, ID], CrudRepository[T, ID]):
     """
     Interface to retrieve entities using the pagination.
     """

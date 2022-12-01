@@ -1,8 +1,8 @@
-import enum
-import typing
+from enum import Enum
+from typing import List, ClassVar, Optional
 
 
-class Direction(enum.Enum):
+class Direction(Enum):
     """
     Enumeration for sort directions.
     """
@@ -27,7 +27,7 @@ class Direction(enum.Enum):
         )
 
     @staticmethod
-    def values() -> typing.List["Direction"]:
+    def values() -> List["Direction"]:
         """
         Returns an array containing the constants of this enum type, in the order they are declared.
 
@@ -53,45 +53,45 @@ class Order:
     PropertyPath implements the pairing of a :class:`Direction` and a property.
     """
 
-    DEFAULT_DIRECTION: typing.ClassVar[Direction] = Direction.ASC
+    DEFAULT_DIRECTION: ClassVar[Direction] = Direction.ASC
 
     def __init__(
         self,
-        property: str,
-        direction: typing.Optional[Direction] = DEFAULT_DIRECTION,
+        property_: str,
+        direction: Optional[Direction] = DEFAULT_DIRECTION,
     ):
-        if not property:
+        if not property_:
             raise ValueError("Property must not be None or empty")
-        self.property = property
+        self.property = property_
         self.direction = direction or self.DEFAULT_DIRECTION
 
     @classmethod
-    def by(cls, property: str) -> "Order":
+    def by(cls, property_: str) -> "Order":
         """
         Creates a new :class:`Order` instance. Takes a single property. :class:`Direction` defaults to
         Order.DEFAULT_DIRECTION.
 
-        :param property: must not be None or empty.
+        :param property_: must not be None or empty.
         """
-        return cls(property=property)
+        return cls(property_)
 
     @classmethod
-    def asc(cls, property: str) -> "Order":
+    def asc(cls, property_: str) -> "Order":
         """
         Creates a new :class:`Order` instance. Takes a single property. :class:`Direction` is Direction.ASC.
 
-        :param property: must not be None or empty.
+        :param property_: must not be None or empty.
         """
-        return cls(property=property, direction=Direction.ASC)
+        return cls(property_, Direction.ASC)
 
     @classmethod
-    def desc(cls, property: str) -> "Order":
+    def desc(cls, property_: str) -> "Order":
         """
         Creates a new :class:`Order` instance. Takes a single property. :class:`Direction` is Direction.DESC.
 
-        :param property: must not be None or empty.
+        :param property_: must not be None or empty.
         """
-        return cls(property=property, direction=Direction.DESC)
+        return cls(property_, Direction.DESC)
 
     def is_ascending(self):
         """
@@ -109,15 +109,15 @@ class Order:
         """
         Returns a new :class:`Order` with the given :class:`Direction`.
         """
-        return Order(property=self.property, direction=direction)
+        return Order(self.property, direction)
 
-    def with_property(self, property: str) -> "Order":
+    def with_property(self, property_: str) -> "Order":
         """
         Returns a new :class:`Order` with the given property.
 
-        :param property: must not be None or empty.
+        :param property_: must not be None or empty.
         """
-        return Order(property=property, direction=self.direction)
+        return Order(property_, self.direction)
 
 
 class Sort:
@@ -128,14 +128,14 @@ class Sort:
     direction defaults to Order.DEFAULT_DIRECTION.
     """
 
-    def __init__(self, orders: typing.List[Order]):
+    def __init__(self, orders: List[Order]):
         self.orders = orders
 
     @classmethod
     def by(
         cls,
         *properties: str,
-        direction: typing.Optional[Direction] = Order.DEFAULT_DIRECTION,
+        direction: Optional[Direction] = Order.DEFAULT_DIRECTION,
     ) -> "Sort":
         """
         Creates a new :class:`Sort` for the given properties.
@@ -146,9 +146,7 @@ class Sort:
         """
         if not properties:
             raise ValueError("You have to provide at least one property to sort by")
-        return cls(
-            orders=[Order(property=prop, direction=direction) for prop in properties]
-        )
+        return cls([Order(p, direction) for p in properties])
 
     @classmethod
     def unsorted(cls) -> "Sort":
@@ -157,7 +155,7 @@ class Sort:
 
         :return:
         """
-        return cls(orders=[])
+        return cls([])
 
     def ascending(self) -> "Sort":
         """
@@ -192,17 +190,17 @@ class Sort:
             raise ValueError("Sort must not be None")
         orders = [order for order in self.orders]
         orders.extend(sort.orders)
-        return Sort(orders=orders)
+        return Sort(orders)
 
-    def get_order_for(self, property: str) -> typing.Optional[Order]:
+    def get_order_for(self, property_: str) -> Optional[Order]:
         """
         Returns the class:`Order` registered for the given property.
 
-        :param property:
+        :param property_:
         :return:
         """
         for order in self.orders:
-            if order.property == property:
+            if order.property == property_:
                 return order
         return None
 
@@ -213,9 +211,4 @@ class Sort:
         :param direction:
         :return:
         """
-        return Sort(
-            orders=[
-                Order(property=order.property, direction=direction)
-                for order in self.orders
-            ]
-        )
+        return Sort([Order(order.property, direction) for order in self.orders])

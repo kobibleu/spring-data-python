@@ -95,7 +95,9 @@ class CrudRepository(ABC, Generic[T, ID]):
 
     @abstractmethod
     async def find_all_by_id(
-        self, ids: List[ID], sort: Optional[Sort] = None
+        self,
+        ids: List[ID],
+        sort: Optional[Sort] = None,
     ) -> List[T]:
         """
         Returns all entities with the given IDs.
@@ -147,14 +149,16 @@ class CrudRepository(ABC, Generic[T, ID]):
         raise NotImplementedError()
 
 
-class PagingRepository(ABC, Generic[T, ID], CrudRepository[T, ID]):
+class PagingRepository(Generic[T, ID], CrudRepository[T, ID]):
     """
     Interface to retrieve entities using the pagination.
     """
 
     @abstractmethod
     async def find_page(
-        self, pageable: Pageable, sort: Optional[Sort] = None
+        self,
+        pageable: Pageable,
+        sort: Optional[Sort] = None,
     ) -> Page[T]:
         """
         Returns a :class:`Page` of entities meeting the paging restriction provided in the :class:`Pageable` object.

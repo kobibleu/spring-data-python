@@ -1,23 +1,18 @@
 import math
-import typing
+from typing import TypeVar, Generic, List
 
 from springdata.domain.pageable import Pageable
 
-T = typing.TypeVar("T")
+T = TypeVar("T")
 
 
-class Page(typing.Generic[T]):
+class Page(Generic[T]):
     """
     A page is a sublist of a list of objects. It allows gain information about the position of it in the containing
     entire list.
     """
 
-    def __init__(
-        self,
-        content: typing.List[T],
-        pageable: Pageable = None,
-        total: int = None,
-    ):
+    def __init__(self, content: List[T], pageable: Pageable = None, total: int = None):
         """
         Creates a new :class:`Page`.
 

@@ -1,12 +1,12 @@
-import abc
+from abc import ABC, abstractmethod
 
 
-class Pageable(abc.ABC):
+class Pageable(ABC):
     """
     Abstract interface for pagination information.
     """
 
-    @abc.abstractmethod
+    @abstractmethod
     def first(self) -> "Pageable":
         """
         Return the :class:`Pageable` requesting the first page.
@@ -15,7 +15,7 @@ class Pageable(abc.ABC):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def has_previous(self) -> bool:
         """
         Returns if there's a previous :class:`Pageable` we can access from the current one. Will return false in
@@ -41,7 +41,7 @@ class Pageable(abc.ABC):
         """
         return not self.is_paged()
 
-    @abc.abstractmethod
+    @abstractmethod
     def next(self) -> "Pageable":
         """
         Returns the :class:`Pageable` requesting the next :class:`Page`.
@@ -50,7 +50,7 @@ class Pageable(abc.ABC):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def offset(self) -> int:
         """
         Returns the offset to be taken according to the underlying page and page size.
@@ -67,9 +67,9 @@ class Pageable(abc.ABC):
         :param page_size: the size of the page to be returned, must be greater than 0.
         :return: a new :class:`PageRequest`.
         """
-        return PageRequest(page=0, size=page_size)
+        return PageRequest(0, page_size)
 
-    @abc.abstractmethod
+    @abstractmethod
     def page_number(self) -> int:
         """
         Returns the page to be returned.
@@ -79,7 +79,7 @@ class Pageable(abc.ABC):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def page_size(self) -> int:
         """
         Returns the number of items to be returned.
@@ -89,7 +89,7 @@ class Pageable(abc.ABC):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def previous_or_first(self) -> "Pageable":
         """
         Returns the previous :class:`Pageable` or the first :class:`Pageable` if the current one is already the
@@ -108,7 +108,7 @@ class Pageable(abc.ABC):
         """
         return Unpaged()
 
-    @abc.abstractmethod
+    @abstractmethod
     def with_page(self, page_number: int) -> "Pageable":
         """
         Creates a new :class:`Pageable` with page number applied.
@@ -141,7 +141,7 @@ class PageRequest(Pageable):
         self.size = size
 
     def first(self) -> "PageRequest":
-        return PageRequest(page=0, size=self.size)
+        return PageRequest(0, self.size)
 
     def offset(self) -> int:
         return self.page * self.size
@@ -150,7 +150,7 @@ class PageRequest(Pageable):
         return self.page > 0
 
     def next(self) -> "PageRequest":
-        return PageRequest(page=self.page + 1, size=self.size)
+        return PageRequest(self.page + 1, self.size)
 
     def page_number(self) -> int:
         return self.page
@@ -159,12 +159,10 @@ class PageRequest(Pageable):
         return self.size
 
     def previous_or_first(self) -> "PageRequest":
-        return (
-            self if self.page == 0 else PageRequest(page=self.page - 1, size=self.size)
-        )
+        return self if self.page == 0 else PageRequest(self.page - 1, self.size)
 
     def with_page(self, page_number: int) -> "PageRequest":
-        return PageRequest(page=page_number, size=self.size)
+        return PageRequest(page_number, self.size)
 
 
 class Unpaged(Pageable):
