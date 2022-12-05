@@ -31,9 +31,9 @@ class Page(Generic[T]):
         elif (
             len(content) > 0
             and self.pageable.is_paged()
-            and self.pageable.offset() + self.pageable.page_size() > total
+            and self.pageable.offset + self.pageable.page_size > total
         ):
-            self.total_elements = self.pageable.offset() + len(content)
+            self.total_elements = self.pageable.offset + len(content)
         else:
             self.total_elements = total
 
@@ -53,7 +53,7 @@ class Page(Generic[T]):
 
         :return: the number of the current :class:`Page`.
         """
-        return self.pageable.page_number() if self.pageable.is_paged() else 0
+        return self.pageable.page_number if self.pageable.is_paged() else 0
 
     @property
     def number_of_elements(self) -> int:
@@ -72,7 +72,7 @@ class Page(Generic[T]):
         :return: the size of the :class:`Page`.
         """
         return (
-            self.pageable.page_size() if self.pageable.is_paged() else len(self.content)
+            self.pageable.page_size if self.pageable.is_paged() else len(self.content)
         )
 
     @property

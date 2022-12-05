@@ -6,6 +6,57 @@ class Pageable(ABC):
     Abstract interface for pagination information.
     """
 
+    @property
+    @abstractmethod
+    def offset(self) -> int:
+        """
+        Returns the offset to be taken according to the underlying page and page size.
+
+        :return: the offset to be taken.
+        """
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def page_number(self) -> int:
+        """
+        Returns the page to be returned.
+
+        :return: the page to be returned
+        :raises NotImplementedError: if the object is unpaged.
+        """
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def page_size(self) -> int:
+        """
+        Returns the number of items to be returned.
+
+        :return: the number of items of that page
+        :raises NotImplementedError: if the object is unpaged.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def of_size(page_size: int) -> "Pageable":
+        """
+        Creates a new :class:`Pageable` for the first page (page number 0) given page size.
+
+        :param page_size: the size of the page to be returned, must be greater than 0.
+        :return: a new :class:`PageRequest`.
+        """
+        return PageRequest(0, page_size)
+
+    @staticmethod
+    def unpaged() -> "Pageable":
+        """
+        Creates a :class:`Pageable` instance representing no pagination setup.
+
+        :return:
+        """
+        return Unpaged()
+
     @abstractmethod
     def first(self) -> "Pageable":
         """
@@ -51,45 +102,6 @@ class Pageable(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def offset(self) -> int:
-        """
-        Returns the offset to be taken according to the underlying page and page size.
-
-        :return: the offset to be taken.
-        """
-        raise NotImplementedError()
-
-    @staticmethod
-    def of_size(page_size: int) -> "Pageable":
-        """
-        Creates a new :class:`Pageable` for the first page (page number 0) given page size.
-
-        :param page_size: the size of the page to be returned, must be greater than 0.
-        :return: a new :class:`PageRequest`.
-        """
-        return PageRequest(0, page_size)
-
-    @abstractmethod
-    def page_number(self) -> int:
-        """
-        Returns the page to be returned.
-
-        :return: the page to be returned
-        :raises NotImplementedError: if the object is unpaged.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def page_size(self) -> int:
-        """
-        Returns the number of items to be returned.
-
-        :return: the number of items of that page
-        :raises NotImplementedError: if the object is unpaged.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
     def previous_or_first(self) -> "Pageable":
         """
         Returns the previous :class:`Pageable` or the first :class:`Pageable` if the current one is already the
@@ -98,15 +110,6 @@ class Pageable(ABC):
         :return:
         """
         raise NotImplementedError()
-
-    @staticmethod
-    def unpaged() -> "Pageable":
-        """
-        Creates a :class:`Pageable` instance representing no pagination setup.
-
-        :return:
-        """
-        return Unpaged()
 
     @abstractmethod
     def with_page(self, page_number: int) -> "Pageable":
@@ -137,32 +140,35 @@ class PageRequest(Pageable):
             raise ValueError("Page index must not be less than zero")
         if size < 1:
             raise ValueError("Page size must not be less than one")
-        self.page = page
-        self.size = size
+        self._page = page
+        self._size = size
+
+    @property
+    def offset(self) -> int:
+        return self._page * self._size
+
+    @property
+    def page_number(self) -> int:
+        return self._page
+
+    @property
+    def page_size(self) -> int:
+        return self._size
 
     def first(self) -> "PageRequest":
-        return PageRequest(0, self.size)
-
-    def offset(self) -> int:
-        return self.page * self.size
+        return PageRequest(0, self._size)
 
     def has_previous(self) -> bool:
-        return self.page > 0
+        return self._page > 0
 
     def next(self) -> "PageRequest":
-        return PageRequest(self.page + 1, self.size)
-
-    def page_number(self) -> int:
-        return self.page
-
-    def page_size(self) -> int:
-        return self.size
+        return PageRequest(self._page + 1, self._size)
 
     def previous_or_first(self) -> "PageRequest":
-        return self if self.page == 0 else PageRequest(self.page - 1, self.size)
+        return self if self._page == 0 else PageRequest(self._page - 1, self._size)
 
     def with_page(self, page_number: int) -> "PageRequest":
-        return PageRequest(page_number, self.size)
+        return PageRequest(page_number, self._size)
 
 
 class Unpaged(Pageable):
@@ -170,11 +176,20 @@ class Unpaged(Pageable):
     :class:`Pageable` implementation to represent the absence of pagination information.
     """
 
-    def first(self) -> "Pageable":
-        return self
-
+    @property
     def offset(self) -> int:
         raise NotImplementedError()
+
+    @property
+    def page_number(self) -> int:
+        raise NotImplementedError()
+
+    @property
+    def page_size(self) -> int:
+        raise NotImplementedError()
+
+    def first(self) -> "Pageable":
+        return self
 
     def has_previous(self) -> bool:
         return False
@@ -184,12 +199,6 @@ class Unpaged(Pageable):
 
     def next(self) -> "Pageable":
         return self
-
-    def page_number(self) -> int:
-        raise NotImplementedError()
-
-    def page_size(self) -> int:
-        raise NotImplementedError()
 
     def previous_or_first(self) -> "Pageable":
         return self
